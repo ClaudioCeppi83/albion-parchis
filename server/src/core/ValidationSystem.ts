@@ -1,4 +1,4 @@
-import { GameState, Player, PlayerAction, ValidationResult } from '../types/game';
+import { GameState, Player, PlayerAction, ValidationResult, GameStatus, TurnPhase } from '../types/game';
 
 /**
  * Sistema de validación de acciones del juego
@@ -28,7 +28,7 @@ export class ValidationSystem {
         case 'trade_request':
           return this.validateTradeRequest(gameState, playerId, action);
         
-        case 'claim_territory':
+        case 'territory_claim':
           return this.validateTerritoryClaim(gameState, playerId, action);
         
         default:
@@ -50,7 +50,7 @@ export class ValidationSystem {
    */
   private validateBasicAction(gameState: GameState, playerId: string, action: PlayerAction): ValidationResult {
     // Verificar que el juego esté activo
-    if (gameState.status !== 'active') {
+    if (gameState.status !== 'playing') {
       return {
         isValid: false,
         error: 'Game is not active'
@@ -92,7 +92,7 @@ export class ValidationSystem {
     const currentTurn = gameState.currentTurn;
     
     // Verificar que es la fase correcta
-    if (currentTurn.phase !== 'rolling') {
+    if (currentTurn.phase !== 'roll') {
       return {
         isValid: false,
         error: 'Not in rolling phase'
@@ -117,7 +117,7 @@ export class ValidationSystem {
     const currentTurn = gameState.currentTurn;
     
     // Verificar que es la fase correcta
-    if (currentTurn.phase !== 'moving') {
+    if (currentTurn.phase !== 'move') {
       return {
         isValid: false,
         error: 'Not in moving phase'
@@ -202,7 +202,7 @@ export class ValidationSystem {
    */
   private validateTradeRequest(gameState: GameState, playerId: string, action: PlayerAction): ValidationResult {
     // Verificar que el intercambio está habilitado en esta fase
-    if (gameState.currentTurn.phase !== 'moving') {
+    if (gameState.currentTurn.phase !== 'move') {
       return {
         isValid: false,
         error: 'Trading not available in current phase'
@@ -332,7 +332,7 @@ export class ValidationSystem {
       }
 
       // Verificar turno actual
-      if (gameState.status === 'active') {
+      if (gameState.status === 'playing') {
         const currentPlayer = gameState.players.find(p => p.id === gameState.currentTurn.playerId);
         if (!currentPlayer) {
           return {
