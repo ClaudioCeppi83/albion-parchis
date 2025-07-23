@@ -177,7 +177,7 @@ export class ValidationSystem {
     }
 
     // Verificar que el movimiento es válido según el dado
-    const isValidDistance = this.validateMoveDistance(piece, action.data.targetPosition, currentTurn.diceRoll);
+    const isValidDistance = this.validateMoveDistance(piece, action.data.targetPosition, currentTurn.diceRoll || 0);
     if (!isValidDistance.isValid) {
       return isValidDistance;
     }

@@ -209,7 +209,17 @@ export class ResourceManager {
    * Obtener costo de equipamiento
    */
   getEquipmentCost(equipmentType: string): PlayerResources | null {
-    return this.EQUIPMENT_COSTS[equipmentType as keyof typeof this.EQUIPMENT_COSTS] || null;
+    const cost = this.EQUIPMENT_COSTS[equipmentType as keyof typeof this.EQUIPMENT_COSTS];
+    if (!cost) return null;
+    
+    // Ensure all required PlayerResources properties are present
+    return {
+      stone: cost.stone || 0,
+      wood: (cost as any).wood || 0,
+      fiber: (cost as any).fiber || 0,
+      ore: (cost as any).ore || 0,
+      silver: (cost as any).silver || 0
+    };
   }
 
   /**
