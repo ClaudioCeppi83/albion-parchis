@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-slate-900 text-slate-100 antialiased;
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+  }
+
+  * {
+    @apply border-slate-700;
+  }
+}
+
+@layer components {
+  /* Botones del juego */
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-700 hover:bg-slate-600 text-slate-100 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900;
+  }
+
+  .btn-guild-steel {
+    @apply bg-steel-600 hover:bg-steel-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-steel-500 focus:ring-offset-2 focus:ring-offset-slate-900;
+  }
+
+  .btn-guild-arcane {
+    @apply bg-arcane-600 hover:bg-arcane-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-arcane-500 focus:ring-offset-2 focus:ring-offset-slate-900;
+  }
+
+  .btn-guild-green {
+    @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900;
+  }
+
+  .btn-guild-golden {
+    @apply bg-golden-600 hover:bg-golden-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-golden-500 focus:ring-offset-2 focus:ring-offset-slate-900;
+  }
+
+  /* Cards y paneles */
+  .card {
+    @apply bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 shadow-xl;
+  }
+
+  .card-hover {
+    @apply card hover:bg-slate-800/70 hover:border-slate-600 transition-all duration-200 cursor-pointer;
+  }
+
+  .panel {
+    @apply bg-slate-800/80 backdrop-blur-md border border-slate-700 rounded-lg p-4 shadow-lg;
+  }
+
+  /* Elementos del tablero */
+  .board-cell {
+    @apply relative w-12 h-12 border border-slate-600 rounded-lg transition-all duration-200 cursor-pointer;
+  }
+
+  .board-cell-safe {
+    @apply bg-zone-safe/20 border-zone-safe hover:bg-zone-safe/30;
+  }
+
+  .board-cell-yellow {
+    @apply bg-zone-yellow/20 border-zone-yellow hover:bg-zone-yellow/30;
+  }
+
+  .board-cell-red {
+    @apply bg-zone-red/20 border-zone-red hover:bg-zone-red/30;
+  }
+
+  .board-cell-black {
+    @apply bg-zone-black/20 border-zone-black hover:bg-zone-black/30;
+  }
+
+  .board-cell-highlighted {
+    @apply ring-2 ring-blue-400 ring-opacity-75 animate-glow;
+  }
+
+  /* Fichas de jugador */
+  .piece {
+    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-2 shadow-lg transition-all duration-300 cursor-pointer;
+  }
+
+  .piece-steel {
+    @apply bg-steel-500 border-steel-300 hover:bg-steel-400;
+  }
+
+  .piece-arcane {
+    @apply bg-arcane-500 border-arcane-300 hover:bg-arcane-400;
+  }
+
+  .piece-green {
+    @apply bg-green-500 border-green-300 hover:bg-green-400;
+  }
+
+  .piece-golden {
+    @apply bg-golden-500 border-golden-300 hover:bg-golden-400;
+  }
+
+  .piece-selected {
+    @apply ring-4 ring-white ring-opacity-75 animate-glow;
+  }
+
+  .piece-movable {
+    @apply hover:scale-110 animate-float;
+  }
+
+  /* Dados */
+  .dice {
+    @apply w-16 h-16 bg-slate-700 border-2 border-slate-500 rounded-lg flex items-center justify-center text-2xl font-bold text-white shadow-lg transition-all duration-200 cursor-pointer hover:bg-slate-600;
+  }
+
+  .dice-rolling {
+    @apply animate-dice-roll;
+  }
+
+  /* Recursos */
+  .resource-icon {
+    @apply w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm;
+  }
+
+  .resource-stone {
+    @apply bg-slate-600;
+  }
+
+  .resource-wood {
+    @apply bg-amber-700;
+  }
+
+  .resource-fiber {
+    @apply bg-green-700;
+  }
+
+  .resource-ore {
+    @apply bg-blue-700;
+  }
+
+  .resource-silver {
+    @apply bg-slate-400;
+  }
+
+  /* Efectos especiales */
+  .glow-effect {
+    @apply animate-glow;
+  }
+
+  .floating-effect {
+    @apply animate-float;
+  }
+
+  .shake-effect {
+    @apply animate-shake;
+  }
+
+  /* Inputs */
+  .input-field {
+    @apply bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200;
+  }
+
+  /* Scrollbars personalizados */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(71 85 105) rgb(30 41 59);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-slate-800;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-600 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-500;
+  }
+
+  /* Tooltips */
+  .tooltip {
+    @apply absolute z-50 px-2 py-1 text-xs bg-slate-900 text-slate-100 rounded border border-slate-700 shadow-lg pointer-events-none;
+  }
+
+  /* Modales */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40;
+  }
+
+  .modal-content {
+    @apply fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-50 max-w-md w-full mx-4;
+  }
+
+  /* Notificaciones */
+  .notification {
+    @apply fixed top-4 right-4 bg-slate-800 border border-slate-700 rounded-lg p-4 shadow-lg z-50 animate-slide-up;
+  }
+
+  .notification-success {
+    @apply border-green-500 bg-green-900/20;
+  }
+
+  .notification-error {
+    @apply border-red-500 bg-red-900/20;
+  }
+
+  .notification-warning {
+    @apply border-yellow-500 bg-yellow-900/20;
+  }
+
+  .notification-info {
+    @apply border-blue-500 bg-blue-900/20;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .gradient-text {
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}

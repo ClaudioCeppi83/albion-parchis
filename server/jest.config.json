@@ -1,0 +1,22 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "roots": ["<rootDir>/src"],
+  "testMatch": ["**/__tests__/**/*.ts", "**/?(*.)+(spec|test).ts"],
+  "transform": {
+    "^.+\\.ts$": "ts-jest"
+  },
+  "collectCoverageFrom": [
+    "src/**/*.ts",
+    "!src/**/*.d.ts",
+    "!src/tests/**"
+  ],
+  "moduleNameMapping": {
+    "^@core/(.*)$": "<rootDir>/src/core/$1",
+    "^@systems/(.*)$": "<rootDir>/src/systems/$1",
+    "^@networking/(.*)$": "<rootDir>/src/networking/$1",
+    "^@persistence/(.*)$": "<rootDir>/src/persistence/$1",
+    "^@types/(.*)$": "<rootDir>/src/types/$1",
+    "^@utils/(.*)$": "<rootDir>/src/utils/$1"
+  }
+}
