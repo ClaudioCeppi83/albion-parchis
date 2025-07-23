@@ -1,4 +1,4 @@
-import { createServer } from './server';
+import { GameServer } from './server';
 import { logger } from './utils/logger';
 
 /**
@@ -10,7 +10,7 @@ async function main() {
     const gameServer = new GameServer();
     
     // Inicializar el servidor
-    await gameServer.start();
+    gameServer.start();
     
     logger.info('🚀 Albion Parchís Server started successfully');
     
