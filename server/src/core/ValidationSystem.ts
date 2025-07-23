@@ -1,4 +1,21 @@
-import { GameState, Player, PlayerAction, ValidationResult, GameStatus, TurnPhase } from '../types/game';
+import { 
+  GameState, 
+  Player, 
+  PlayerAction, 
+  ValidationResult, 
+  GameStatus, 
+  TurnPhase,
+  Piece,
+  BoardPosition,
+  PlayerResources
+} from '../types/game';
+
+// Tipo básico para configuración del juego
+interface GameConfig {
+  maxPlayers?: number;
+  turnTimeLimit?: number;
+  [key: string]: any; // Para propiedades adicionales
+}
 
 /**
  * Sistema de validación de acciones del juego
@@ -171,7 +188,7 @@ export class ValidationSystem {
   /**
    * Validar distancia de movimiento
    */
-  private validateMoveDistance(piece: any, targetPosition: any, diceRoll: number): ValidationResult {
+  private validateMoveDistance(piece: Piece, targetPosition: BoardPosition, diceRoll: number): ValidationResult {
     // Implementación simplificada para el MVP
     // En el futuro se implementará la validación completa de distancias en el tablero
     
@@ -289,7 +306,7 @@ export class ValidationSystem {
   /**
    * Validar que un jugador tiene los recursos especificados
    */
-  private validatePlayerResources(player: Player, requiredResources: any): ValidationResult {
+  private validatePlayerResources(player: Player, requiredResources: Partial<PlayerResources>): ValidationResult {
     if (!requiredResources) {
       return { isValid: true };
     }
@@ -354,7 +371,7 @@ export class ValidationSystem {
   /**
    * Validar configuración del juego
    */
-  validateGameConfig(config: any): ValidationResult {
+  validateGameConfig(config: GameConfig | null | undefined): ValidationResult {
     if (!config) {
       return {
         isValid: false,
