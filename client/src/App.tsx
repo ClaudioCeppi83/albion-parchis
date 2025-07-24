@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { Layout } from './components/layout';
-import { HomePage, LobbyPage, SettingsPage } from './pages';
+import { HomePage, LobbyPage, SettingsPage, IsometricTestPage } from './pages';
 import { GameProvider } from './contexts/GameContext';
 import { ConnectionStatus } from './components/game/ConnectionStatus';
 
@@ -15,6 +15,7 @@ function App() {
               <Route index element={<HomePage />} />
               <Route path="lobby" element={<LobbyPage />} />
               <Route path="settings" element={<SettingsPage />} />
+              <Route path="isometric" element={<IsometricTestPage />} />
             </Route>
           </Routes>
           

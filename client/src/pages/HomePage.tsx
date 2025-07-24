@@ -78,6 +78,11 @@ const HomePage: React.FC = () => {
               Jugar Ahora
             </Button>
           </Link>
+          <Link to="/isometric">
+            <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+              🎮 Motor Isométrico
+            </Button>
+          </Link>
           <Button variant="outline" size="lg" className="w-full sm:w-auto">
             Ver Tutorial
           </Button>
