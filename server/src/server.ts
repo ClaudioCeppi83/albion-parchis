@@ -274,8 +274,4 @@ export class GameServer {
   }
 }
 
-// Crear y iniciar el servidor
-const gameServer = new GameServer();
-gameServer.start();
-
-export default gameServer;
+export default GameServer;

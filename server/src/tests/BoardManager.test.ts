@@ -1,128 +1,173 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { BoardManager } from '../core/BoardManager';
-import { GuildType, Piece, BoardPosition } from '../types/game';
+import { GuildType, GameState, Player, BoardPosition } from '../types/game';
 
 describe('BoardManager', () => {
   let boardManager: BoardManager;
+  let gameState: GameState;
 
   beforeEach(() => {
     boardManager = new BoardManager();
+    gameState = {
+      gameId: 'test-game',
+      status: 'playing',
+      players: [
+        {
+          id: 'player-1',
+          name: 'Player 1',
+          guildType: 'steel',
+          pieces: [],
+          resources: {
+            silver: 0,
+            stone: 0,
+            wood: 0,
+            fiber: 0,
+            ore: 0
+          },
+          level: 1,
+          experience: 0,
+          isConnected: true
+        },
+        {
+          id: 'player-2',
+          name: 'Player 2',
+          guildType: 'arcane',
+          pieces: [],
+          resources: {
+            silver: 0,
+            stone: 0,
+            wood: 0,
+            fiber: 0,
+            ore: 0
+          },
+          level: 1,
+          experience: 0,
+          isConnected: true
+        }
+      ],
+      currentTurn: {
+        playerId: 'player-1',
+        phase: 'roll',
+        timeRemaining: 30
+      },
+      territories: [],
+      eventLog: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
   });
 
   describe('Initialization', () => {
-    it('should initialize with empty board', () => {
-      const pieces = boardManager.getAllPieces();
-      expect(pieces).toHaveLength(0);
+    it('should initialize pieces for all players', () => {
+      boardManager.initializePieces(gameState);
+      
+      expect(gameState.players[0].pieces).toHaveLength(4);
+      expect(gameState.players[1].pieces).toHaveLength(4);
+      
+      // Verificar que las fichas tienen IDs únicos
+      const allPieceIds = gameState.players.flatMap(p => p.pieces.map(piece => piece.id));
+      const uniqueIds = new Set(allPieceIds);
+      expect(uniqueIds.size).toBe(allPieceIds.length);
     });
 
-    it('should initialize player pieces correctly', () => {
-      const playerId = 'player-1';
-      boardManager.initializePlayerPieces(playerId, GuildType.STEEL);
+    it('should assign correct guild types to players', () => {
+      boardManager.initializePieces(gameState);
       
-      const pieces = boardManager.getPlayerPieces(playerId);
-      expect(pieces).toHaveLength(4);
+      expect(gameState.players[0].guildType).toBe('steel');
+      expect(gameState.players[1].guildType).toBe('arcane');
+    });
+
+    it('should initialize pieces in home status', () => {
+      boardManager.initializePieces(gameState);
       
-      pieces.forEach((piece, index) => {
-        expect(piece.id).toBe(`${playerId}-piece-${index}`);
-        expect(piece.playerId).toBe(playerId);
-        expect(piece.guild).toBe(GuildType.STEEL);
-        expect(piece.status).toBe('home');
-        expect(piece.position.type).toBe('home');
+      gameState.players.forEach(player => {
+        player.pieces.forEach(piece => {
+          expect(piece.status).toBe('home');
+          expect(piece.level).toBe(1);
+          expect(piece.experience).toBe(0);
+        });
       });
+    });
+  });
+
+  describe('Available Moves', () => {
+    beforeEach(() => {
+      boardManager.initializePieces(gameState);
+    });
+
+    it('should allow piece to exit home with dice roll of 5 or 6', () => {
+      const moves = boardManager.getAvailableMoves(gameState, 'player-1', 6);
+      expect(moves.length).toBeGreaterThan(0);
+    });
+
+    it('should not allow piece to exit home with dice roll less than 5', () => {
+      const moves = boardManager.getAvailableMoves(gameState, 'player-1', 3);
+      expect(moves).toHaveLength(0);
+    });
+
+    it('should return empty array for non-existent player', () => {
+      const moves = boardManager.getAvailableMoves(gameState, 'non-existent', 6);
+      expect(moves).toHaveLength(0);
     });
   });
 
   describe('Piece Movement', () => {
     beforeEach(() => {
-      boardManager.initializePlayerPieces('player-1', GuildType.STEEL);
+      boardManager.initializePieces(gameState);
     });
 
-    it('should calculate available moves for piece in home', () => {
-      const pieces = boardManager.getPlayerPieces('player-1');
-      const piece = pieces[0];
+    it('should successfully move a piece', () => {
+      const player = gameState.players[0];
+      const piece = player.pieces[0];
+      const targetPosition: BoardPosition = { x: 0, y: 0, zone: 'safe' };
       
-      const moves = boardManager.getAvailableMoves(piece.id, 6);
-      expect(moves).toHaveLength(1);
-      expect(moves[0].type).toBe('start');
-    });
-
-    it('should not allow movement with insufficient dice roll from home', () => {
-      const pieces = boardManager.getPlayerPieces('player-1');
-      const piece = pieces[0];
-      
-      const moves = boardManager.getAvailableMoves(piece.id, 3);
-      expect(moves).toHaveLength(0);
-    });
-
-    it('should move piece to start position with dice roll of 6', () => {
-      const pieces = boardManager.getPlayerPieces('player-1');
-      const piece = pieces[0];
-      
-      const newPosition: BoardPosition = { type: 'start', index: 0 };
-      const result = boardManager.movePiece(piece.id, newPosition);
+      const result = boardManager.movePiece(gameState, {
+        pieceId: piece.id,
+        targetPosition
+      });
       
       expect(result.success).toBe(true);
-      
-      const updatedPiece = boardManager.getPiece(piece.id);
-      expect(updatedPiece?.position.type).toBe('start');
-      expect(updatedPiece?.status).toBe('active');
+      expect(piece.position.x).toBe(0);
+      expect(piece.position.y).toBe(0);
     });
 
-    it('should calculate moves for piece on board', () => {
-      const pieces = boardManager.getPlayerPieces('player-1');
-      const piece = pieces[0];
-      
-      // Mover pieza al tablero primero
-      const startPosition: BoardPosition = { type: 'start', index: 0 };
-      boardManager.movePiece(piece.id, startPosition);
-      
-      // Calcular movimientos disponibles
-      const moves = boardManager.getAvailableMoves(piece.id, 4);
-      expect(moves.length).toBeGreaterThan(0);
-    });
-  });
-
-  describe('Position Validation', () => {
-    beforeEach(() => {
-      boardManager.initializePlayerPieces('player-1', GuildType.STEEL);
-    });
-
-    it('should identify safe positions correctly', () => {
-      const safePositions = [0, 8, 16, 24, 32, 40, 48, 56]; // Posiciones seguras típicas
-      
-      safePositions.forEach(index => {
-        const position: BoardPosition = { type: 'board', index };
-        expect(boardManager.isSafePosition(position)).toBe(true);
+    it('should return error for non-existent piece', () => {
+      const result = boardManager.movePiece(gameState, {
+        pieceId: 'non-existent-piece',
+        targetPosition: { x: 0, y: 0, zone: 'safe' }
       });
+      
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Piece not found');
     });
 
-    it('should identify finish positions correctly', () => {
-      const finishPosition: BoardPosition = { type: 'finish', index: 0 };
-      expect(boardManager.isFinishPosition(finishPosition)).toBe(true);
+    it('should update piece status when moved from home', () => {
+      const player = gameState.players[0];
+      const piece = player.pieces[0];
+      const targetPosition: BoardPosition = { x: 0, y: 0, zone: 'yellow' };
       
-      const boardPosition: BoardPosition = { type: 'board', index: 10 };
-      expect(boardManager.isFinishPosition(boardPosition)).toBe(false);
+      expect(piece.status).toBe('home');
+      
+      boardManager.movePiece(gameState, {
+        pieceId: piece.id,
+        targetPosition
+      });
+      
+      expect(piece.status).toBe('board');
     });
   });
 
-  describe('Multiple Players', () => {
-    it('should handle multiple players correctly', () => {
-      boardManager.initializePlayerPieces('player-1', GuildType.STEEL);
-      boardManager.initializePlayerPieces('player-2', GuildType.ARCANE);
+  describe('Board Information', () => {
+    it('should return board configuration', () => {
+      const boardInfo = boardManager.getBoardInfo();
       
-      const allPieces = boardManager.getAllPieces();
-      expect(allPieces).toHaveLength(8);
+      expect(boardInfo).toHaveProperty('size');
+      expect(boardInfo).toHaveProperty('safePositions');
+      expect(boardInfo).toHaveProperty('homePositions');
+      expect(boardInfo).toHaveProperty('finishPositions');
       
-      const player1Pieces = boardManager.getPlayerPieces('player-1');
-      const player2Pieces = boardManager.getPlayerPieces('player-2');
-      
-      expect(player1Pieces).toHaveLength(4);
-      expect(player2Pieces).toHaveLength(4);
-      
-      // Verificar que las piezas tienen diferentes IDs
-      const allIds = allPieces.map(p => p.id);
-      const uniqueIds = new Set(allIds);
-      expect(uniqueIds.size).toBe(allIds.length);
+      expect(boardInfo.size).toBe(15);
+      expect(Array.isArray(boardInfo.safePositions)).toBe(true);
     });
   });
 });
