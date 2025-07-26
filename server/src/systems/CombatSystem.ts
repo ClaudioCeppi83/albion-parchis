@@ -93,7 +93,7 @@ export class CombatSystem {
     // El perdedor retrocede o vuelve a casa (lógica simplificada)
     if (result.loser === 'defender') {
       defenderPiece.status = 'home';
-      defenderPiece.position = { x: -1, y: -1 };
+      defenderPiece.position = { x: -1, y: -1, zone: 'safe' };
     }
   }
 

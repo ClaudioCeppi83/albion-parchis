@@ -9,6 +9,7 @@ describe('BoardManager', () => {
   beforeEach(() => {
     boardManager = new BoardManager();
     gameState = {
+      id: 'test-game-id', // Agregamos la propiedad id faltante
       gameId: 'test-game',
       status: 'playing',
       players: [

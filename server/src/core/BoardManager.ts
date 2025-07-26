@@ -61,7 +61,7 @@ export class BoardManager {
   /**
    * Convertir índice lineal a posición del tablero
    */
-  private getPositionFromIndex(index: number): BoardPosition {
+  public getPositionFromIndex(index: number): BoardPosition {
     // Mapeo simplificado para el MVP
     // En el futuro se implementará el mapeo isométrico completo
     const x = index % this.BOARD_SIZE;
@@ -77,23 +77,43 @@ export class BoardManager {
   /**
    * Determinar el tipo de zona según la posición
    */
-  private getZoneType(index: number): ZoneType {
+  public getZoneType(index: number): ZoneType;
+  public getZoneType(position: BoardPosition): ZoneType;
+  public getZoneType(indexOrPosition: number | BoardPosition): ZoneType {
+    let index: number;
+    
+    if (typeof indexOrPosition === 'number') {
+      index = indexOrPosition;
+    } else {
+      index = this.getIndexFromPosition(indexOrPosition);
+    }
+
+    // Posiciones de casa
+    const allHomePositions = Object.values(this.HOME_POSITIONS).flat();
+    if (allHomePositions.includes(index)) {
+      return 'home';
+    }
+
+    // Posiciones de meta
+    const allFinishPositions = Object.values(this.FINISH_POSITIONS).flat();
+    if (allFinishPositions.includes(index)) {
+      return 'finish';
+    }
+
+    // Posiciones de inicio
+    const startPositions = [0, 17, 34, 51]; // Posiciones de inicio para cada gremio
+    if (startPositions.includes(index)) {
+      return 'start';
+    }
+
     // Posiciones seguras (ciudades)
     if (this.SAFE_POSITIONS.includes(index)) {
       return 'safe';
     }
     
-    // Posiciones de casa y meta
-    const allHomePositions = Object.values(this.HOME_POSITIONS).flat();
-    const allFinishPositions = Object.values(this.FINISH_POSITIONS).flat();
-    
-    if (allHomePositions.includes(index) || allFinishPositions.includes(index)) {
-      return 'safe';
-    }
-    
-    // Por ahora, todas las demás son zonas amarillas
-    // En fases posteriores se implementarán zonas rojas y negras
-    return 'yellow';
+    // Por ahora, todas las demás son zonas normales
+    // En fases posteriores se implementarán zonas rojas y negras específicas
+    return 'normal';
   }
 
   /**
@@ -132,7 +152,7 @@ export class BoardManager {
   /**
    * Obtener posición de inicio para un gremio
    */
-  private getStartPosition(guildType: GuildType): BoardPosition {
+  public getStartPosition(guildType: GuildType): BoardPosition {
     const startIndices = {
       steel: 0,
       arcane: 17,
@@ -146,7 +166,7 @@ export class BoardManager {
   /**
    * Calcular nueva posición después del movimiento
    */
-  private calculateNewPosition(currentPosition: Point2D, diceRoll: number, guildType: GuildType): BoardPosition | null {
+  public calculateNewPosition(currentPosition: Point2D, diceRoll: number, guildType: GuildType): BoardPosition | null {
     // Implementación simplificada para el MVP
     // En el futuro se implementará el recorrido completo del tablero
     
@@ -177,8 +197,20 @@ export class BoardManager {
   /**
    * Convertir posición a índice lineal
    */
-  private getIndexFromPosition(position: BoardPosition): number {
+  public getIndexFromPosition(position: BoardPosition): number {
     return position.y * this.BOARD_SIZE + position.x;
+  }
+
+  /**
+   * Verificar si una posición es válida en el tablero
+   */
+  public isValidPosition(position: BoardPosition): boolean {
+    // Verificar límites del tablero
+    if (position.x < 0 || position.x >= this.BOARD_SIZE || 
+        position.y < 0 || position.y >= this.BOARD_SIZE) {
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -251,11 +283,11 @@ export class BoardManager {
         // "Comer" la ficha enemiga (enviarla a casa)
         enemyPiece.piece.status = 'home';
         const homePos = this.getHomePosition(enemyPiece.player.guildType, enemyPiece.piece);
-        enemyPiece.piece.position = { x: homePos.x, y: homePos.y };
+        enemyPiece.piece.position = homePos;
       }
 
-      // Mover la ficha (convertir BoardPosition a Point2D)
-      targetPiece.position = { x: targetPosition.x, y: targetPosition.y };
+      // Mover la ficha
+      targetPiece.position = targetPosition;
       
       // Actualizar estado de la ficha
       if (this.isFinishPosition(targetPosition, targetPlayer.guildType)) {
@@ -298,7 +330,7 @@ export class BoardManager {
   /**
    * Obtener posición de casa para una ficha
    */
-  private getHomePosition(guildType: GuildType, piece: Piece): BoardPosition {
+  public getHomePosition(guildType: GuildType, piece: Piece): BoardPosition {
     const homePositions = this.HOME_POSITIONS[guildType];
     const pieceIndex = parseInt(piece.id.split('_').pop() || '0');
     return this.getPositionFromIndex(homePositions[pieceIndex]);

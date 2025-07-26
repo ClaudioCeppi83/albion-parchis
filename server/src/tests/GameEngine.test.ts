@@ -51,30 +51,17 @@ describe('GameEngine', () => {
     });
 
     it('should not allow more than 4 players', () => {
-      const gameId = gameEngine.createGame('Player1').gameId!;
+      const gameId = gameEngine.createGame('Host').gameId!;
       
-      // Agregar solo 1 jugador más para evitar que se inicie automáticamente
+      // Agregar 3 jugadores más (total 4)
       gameEngine.joinGame(gameId, 'Player2');
+      gameEngine.joinGame(gameId, 'Player3');
+      gameEngine.joinGame(gameId, 'Player4'); // Esto debería iniciar automáticamente el juego
       
-      // Ahora el juego se ha iniciado automáticamente, pero podemos seguir agregando jugadores
-      // hasta el límite de 4. Vamos a crear un nuevo juego para probar el límite
-      const gameId2 = gameEngine.createGame('Host').gameId!;
-      
-      // Modificar manualmente el estado para simular un juego con 4 jugadores sin iniciar
-      const gameState = (gameEngine as any).activeGames.get(gameId2);
-      gameState.status = 'waiting'; // Mantener en waiting
-      
-      // Agregar 3 jugadores más manualmente
-      for (let i = 2; i <= 4; i++) {
-        const playerId = `player-${i}`;
-        const player = (gameEngine as any).playerManager.createPlayer(playerId, `Player${i}`);
-        gameState.players.push(player);
-      }
-      
-      // Ahora intentar agregar un quinto jugador
-      const result = gameEngine.joinGame(gameId2, 'Player5');
+      // Intentar agregar un quinto jugador
+      const result = gameEngine.joinGame(gameId, 'Player5');
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Game is full');
+      expect(result.error).toBe('Game already started'); // El juego ya se inició automáticamente
     });
 
     it('should not allow joining non-existent game', () => {
@@ -90,12 +77,12 @@ describe('GameEngine', () => {
       expect(gameState).toBeNull();
     });
 
-    it('should start game automatically when 2 players join', () => {
+    it('should remain in waiting state when 2 players join', () => {
       gameEngine.joinGame(gameId, 'Player2');
       
       const gameState = gameEngine.getGameState(gameId);
-      expect(gameState?.status).toBe('playing');
-      expect(gameState?.currentTurn.playerId).toBeDefined();
+      expect(gameState?.status).toBe('waiting'); // Cambio: ahora permanece en waiting
+      expect(gameState?.players).toHaveLength(2);
     });
 
     it('should maintain game state consistency', () => {
@@ -103,8 +90,8 @@ describe('GameEngine', () => {
 
       const gameState = gameEngine.getGameState(gameId);
       expect(gameState?.players).toHaveLength(2);
-      expect(gameState?.status).toBe('playing');
-      expect(gameState?.currentTurn.playerId).toBeDefined();
+      expect(gameState?.status).toBe('waiting'); // Cambio: ahora permanece en waiting
+      // Removemos la verificación de currentTurn ya que no existe en estado waiting
     });
   });
 

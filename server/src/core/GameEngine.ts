@@ -6,6 +6,11 @@ import { ResourceSystem } from '../systems/ResourceSystem';
 import { CombatSystem } from '../systems/CombatSystem';
 import { TerritorySystem } from '../systems/TerritorySystem';
 import { TradingSystem } from '../systems/TradingSystem';
+// Nuevos sistemas de mecánicas básicas
+import { TurnSystem } from '../systems/TurnSystem';
+import { MovementSystem } from '../systems/MovementSystem';
+import { GameValidationSystem } from '../systems/GameValidationSystem';
+import { GameStateManager } from '../systems/GameStateManager';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -20,11 +25,17 @@ export class GameEngine {
   // Estados del juego
   private activeGames: Map<string, GameState> = new Map();
   
-  // Sistemas de juego
+  // Sistemas de juego originales
   private resourceSystem: ResourceSystem;
   private combatSystem: CombatSystem;
   private territorySystem: TerritorySystem;
   private tradingSystem: TradingSystem;
+
+  // Nuevos sistemas de mecánicas básicas
+  private turnSystem: TurnSystem;
+  private movementSystem: MovementSystem;
+  private gameValidationSystem: GameValidationSystem;
+  private gameStateManager: GameStateManager;
 
   constructor() {
     this.boardManager = new BoardManager();
@@ -35,6 +46,49 @@ export class GameEngine {
     this.combatSystem = new CombatSystem();
     this.territorySystem = new TerritorySystem();
     this.tradingSystem = new TradingSystem();
+
+    // Inicializar nuevos sistemas
+    this.turnSystem = new TurnSystem();
+    this.movementSystem = new MovementSystem();
+    this.gameValidationSystem = new GameValidationSystem();
+    this.gameStateManager = new GameStateManager();
+  }
+
+  /**
+   * Iniciar un juego manualmente
+   */
+  startGameManually(gameId: string): { success: boolean; error?: string } {
+    try {
+      const gameState = this.activeGames.get(gameId);
+      if (!gameState) {
+        return {
+          success: false,
+          error: 'Game not found'
+        };
+      }
+
+      if (gameState.status !== 'waiting') {
+        return {
+          success: false,
+          error: 'Game already started'
+        };
+      }
+
+      if (gameState.players.length < 2) {
+        return {
+          success: false,
+          error: 'Need at least 2 players to start'
+        };
+      }
+
+      const startResult = this.gameStateManager.startGame(gameState);
+      return startResult;
+    } catch (error) {
+      return {
+        success: false,
+        error: `Error starting game: ${error}`
+      };
+    }
   }
 
   /**
@@ -44,17 +98,12 @@ export class GameEngine {
     const gameState = this.activeGames.get(gameId);
     if (!gameState) return;
 
-    gameState.status = 'playing';
-    gameState.currentTurn = {
-      playerId: gameState.players[0].id,
-      phase: 'roll',
-      timeRemaining: 60 // 60 segundos por turno
-    };
-
-    // Inicializar posiciones de las fichas
-    this.boardManager.initializePieces(gameState);
+    // Usar el nuevo GameStateManager para iniciar el juego
+    const result = this.gameStateManager.startGame(gameState);
     
-    gameState.updatedAt = new Date();
+    if (result.success) {
+      this.activeGames.set(gameId, gameState);
+    }
   }
 
   /**
@@ -70,16 +119,8 @@ export class GameEngine {
         };
       }
 
-      // Validar que es el turno del jugador
-      if (gameState.currentTurn.playerId !== playerId) {
-        return {
-          success: false,
-          error: 'Not your turn'
-        };
-      }
-
-      // Validar la acción
-      const validation = this.validationEngine.validateAction(action, gameState);
+      // Usar el nuevo sistema de validaciones
+      const validation = this.gameValidationSystem.validatePlayerAction(gameState, action);
       if (!validation.isValid) {
         return {
           success: false,
@@ -111,7 +152,12 @@ export class GameEngine {
 
       if (result.success && result.gameState) {
         this.activeGames.set(gameId, result.gameState);
-        this.checkWinConditions(result.gameState);
+        
+        // Verificar condiciones de victoria usando el nuevo sistema
+        const winCheck = this.gameStateManager.checkWinConditions(result.gameState);
+        if (winCheck.hasWinner && winCheck.result) {
+          this.gameStateManager.endGame(result.gameState, winCheck.result);
+        }
       }
 
       return result;
@@ -127,29 +173,42 @@ export class GameEngine {
    * Procesar tirada de dados
    */
   private processDiceRoll(gameState: GameState, playerId: string): GameResult {
-    if (gameState.currentTurn.phase !== 'roll') {
+    // Generar tirada de dados
+    const diceRoll = Math.floor(Math.random() * 6) + 1;
+    
+    // Avanzar fase del turno con la tirada
+    const result = this.turnSystem.advancePhase(gameState, diceRoll);
+    
+    if (!result.success) {
       return {
         success: false,
-        error: 'Not in roll phase'
+        error: result.error
       };
     }
 
-    const diceRoll = Math.floor(Math.random() * 6) + 1;
-    gameState.currentTurn.diceRoll = diceRoll;
-    gameState.currentTurn.phase = 'move';
-
-    // Calcular movimientos disponibles
-    const availableMoves = this.boardManager.getAvailableMoves(gameState, playerId, diceRoll);
+    // Calcular movimientos disponibles usando el nuevo sistema
+    const availableMoves = this.movementSystem.calculateAvailableMoves(gameState, playerId, diceRoll);
     gameState.currentTurn.availableMoves = availableMoves;
 
-    // Si no hay movimientos disponibles, pasar turno
+    // Si no hay movimientos disponibles, avanzar automáticamente al siguiente turno
     if (availableMoves.length === 0) {
-      this.nextTurn(gameState);
+      this.turnSystem.nextTurn(gameState);
     }
 
     return {
       success: true,
-      gameState
+      gameState,
+      events: [{
+        id: uuidv4(),
+        type: 'dice_roll',
+        playerId,
+        timestamp: new Date(),
+        data: {
+          diceRoll,
+          availableMoves: availableMoves.length,
+          canMove: availableMoves.length > 0
+        }
+      }]
     };
   }
 
@@ -157,68 +216,53 @@ export class GameEngine {
    * Procesar movimiento de ficha
    */
   private processMovePiece(gameState: GameState, playerId: string, moveData: any): GameResult {
-    if (gameState.currentTurn.phase !== 'move') {
+    // Usar el nuevo sistema de movimiento
+    const moveResult = this.movementSystem.executeMove(
+      gameState, 
+      playerId, 
+      moveData.pieceId, 
+      moveData.targetPosition
+    );
+
+    if (!moveResult.success) {
       return {
         success: false,
-        error: 'Not in move phase'
+        error: moveResult.error
       };
     }
 
-    const result = this.boardManager.movePiece(gameState, moveData);
-    if (!result.success) {
-      return result;
-    }
-
-    // Procesar encuentros si los hay
-    if (result.gameState) {
-      this.processEncounters(result.gameState, moveData);
-      this.nextTurn(result.gameState);
-    }
-
-    return result;
-  }
-
-  /**
-   * Procesar encuentros entre fichas
-   */
-  private processEncounters(gameState: GameState, moveData: any): void {
-    // Implementar lógica de encuentros (combate, comercio, etc.)
-    // Por ahora, implementación básica
-  }
-
-  /**
-   * Pasar al siguiente turno
-   */
-  private nextTurn(gameState: GameState): void {
-    const currentPlayerIndex = gameState.players.findIndex(p => p.id === gameState.currentTurn.playerId);
-    const nextPlayerIndex = (currentPlayerIndex + 1) % gameState.players.length;
+    // Avanzar al siguiente turno
+    const turnResult = this.turnSystem.nextTurn(gameState);
     
-    gameState.currentTurn = {
-      playerId: gameState.players[nextPlayerIndex].id,
-      phase: 'roll',
-      timeRemaining: 60
+    if (!turnResult.success) {
+      return {
+        success: false,
+        error: turnResult.error
+      };
+    }
+
+    return {
+      success: true,
+      gameState,
+      events: [{
+        id: uuidv4(),
+        type: 'piece_move',
+        playerId,
+        timestamp: new Date(),
+        data: {
+          moveEvents: moveResult.events,
+          nextPlayer: gameState.currentTurn.playerId
+        }
+      }]
     };
   }
 
   /**
-   * Verificar condiciones de victoria
+   * Procesar encuentros entre fichas (mantenido para compatibilidad)
    */
-  private checkWinConditions(gameState: GameState): void {
-    for (const player of gameState.players) {
-      const finishedPieces = player.pieces.filter(p => p.status === 'finished');
-      if (finishedPieces.length === 4) {
-        gameState.status = 'finished';
-        // Agregar evento de victoria
-        gameState.eventLog.push({
-          id: uuidv4(),
-          type: 'game_won',
-          playerId: player.id,
-          timestamp: new Date(),
-          data: { winner: player.name }
-        });
-        break;
-      }
-    }
+  private processEncounters(gameState: GameState, moveData: any): void {
+    // Los encuentros ahora se manejan automáticamente en MovementSystem
+    // Este método se mantiene para compatibilidad con sistemas existentes
   }
 
   /**
@@ -295,21 +339,9 @@ export class GameEngine {
       const playerId = uuidv4();
       const hostPlayer = this.playerManager.createPlayer(playerId, playerName);
       
-      const gameState: GameState = {
-        gameId,
-        status: 'waiting',
-        players: [hostPlayer],
-        currentTurn: {
-          playerId: '',
-          phase: 'roll',
-          timeRemaining: 0
-        },
-        territories: this.territorySystem.initializeTerritories(),
-        eventLog: [],
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-
+      // Usar GameStateManager para inicializar el juego
+      const gameState = this.gameStateManager.initializeGame(gameId, [hostPlayer]);
+      
       this.activeGames.set(gameId, gameState);
 
       return {
@@ -431,9 +463,16 @@ export class GameEngine {
       gameState.players.push(newPlayer);
       gameState.updatedAt = new Date();
 
-      // Si tenemos suficientes jugadores, iniciar la partida
-      if (gameState.players.length >= 2) {
-        this.startGame(gameId);
+      // El juego permanece en estado 'waiting' hasta que se inicie manualmente
+      // o se alcance el número máximo de jugadores (4)
+      if (gameState.players.length >= 4) {
+        const startResult = this.gameStateManager.startGame(gameState);
+        if (!startResult.success) {
+          return {
+            success: false,
+            error: startResult.error
+          };
+        }
       }
 
       return {
@@ -446,5 +485,51 @@ export class GameEngine {
         error: `Error joining game: ${error}`
       };
     }
+  }
+
+  /**
+   * Manejar desconexión de jugador
+   */
+  handlePlayerDisconnection(gameId: string, playerId: string): { success: boolean; error?: string } {
+    const gameState = this.activeGames.get(gameId);
+    if (!gameState) {
+      return { success: false, error: 'Game not found' };
+    }
+
+    return this.gameStateManager.handlePlayerDisconnection(gameState, playerId);
+  }
+
+  /**
+   * Manejar reconexión de jugador
+   */
+  handlePlayerReconnection(gameId: string, playerId: string): { success: boolean; error?: string } {
+    const gameState = this.activeGames.get(gameId);
+    if (!gameState) {
+      return { success: false, error: 'Game not found' };
+    }
+
+    return this.gameStateManager.handlePlayerReconnection(gameState, playerId);
+  }
+
+  /**
+   * Actualizar estado del juego (llamar periódicamente)
+   */
+  updateGameState(gameId: string, deltaTime: number): void {
+    const gameState = this.activeGames.get(gameId);
+    if (gameState) {
+      this.gameStateManager.updateGameState(gameState, deltaTime);
+    }
+  }
+
+  /**
+   * Obtener resumen del estado del juego
+   */
+  getGameStateSummary(gameId: string): any {
+    const gameState = this.activeGames.get(gameId);
+    if (!gameState) {
+      return null;
+    }
+
+    return this.gameStateManager.getGameStateSummary(gameState);
   }
 }

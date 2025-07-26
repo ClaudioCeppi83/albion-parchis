@@ -1,7 +1,7 @@
 // Tipos básicos del juego
 export type GuildType = 'steel' | 'arcane' | 'green' | 'golden';
-export type ZoneType = 'safe' | 'yellow' | 'red' | 'black';
-export type GameStatus = 'waiting' | 'playing' | 'finished';
+export type ZoneType = 'safe' | 'yellow' | 'red' | 'black' | 'normal' | 'finish' | 'home' | 'start';
+export type GameStatus = 'waiting' | 'playing' | 'finished' | 'active' | 'paused';
 export type TurnPhase = 'roll' | 'move' | 'action';
 export type PieceStatus = 'home' | 'board' | 'safe' | 'finished';
 
@@ -32,6 +32,7 @@ export interface PlayerResources {
   wood: number;
   fiber: number;
   ore: number;
+  [key: string]: number;
 }
 
 // Equipo
@@ -44,7 +45,7 @@ export interface Equipment {
 // Ficha del jugador
 export interface Piece {
   id: string;
-  position: Point2D;
+  position: BoardPosition;
   level: number;
   experience: number;
   equipment: Equipment;
@@ -107,6 +108,7 @@ export interface GameEvent {
 
 // Estado del juego
 export interface GameState {
+  id: string;
   gameId: string;
   status: GameStatus;
   players: Player[];
@@ -130,6 +132,7 @@ export interface PlayerAction {
 export interface ValidationResult {
   isValid: boolean;
   error?: string;
+  code?: string;
   data?: any;
 }
 
@@ -139,6 +142,11 @@ export interface GameResult {
   gameState?: GameState;
   error?: string;
   events?: GameEvent[];
+  winnerId?: string;
+  winnerName?: string;
+  winCondition?: string;
+  finalScores?: any[];
+  gameStats?: any;
 }
 
 // Mensajes de red

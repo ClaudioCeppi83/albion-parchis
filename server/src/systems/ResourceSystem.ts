@@ -20,8 +20,10 @@ export class ResourceSystem {
     
     // Añadir recursos al jugador
     for (const [resourceType, amount] of Object.entries(resources)) {
-      player.resources[resourceType as keyof PlayerResources] = 
-        (player.resources[resourceType as keyof PlayerResources] || 0) + amount;
+      if (typeof amount === 'number') {
+        player.resources[resourceType as keyof PlayerResources] = 
+          (player.resources[resourceType as keyof PlayerResources] || 0) + amount;
+      }
     }
 
     return { success: true, resources };
@@ -46,9 +48,11 @@ export class ResourceSystem {
    */
   hasResources(player: Player, requiredResources: Partial<PlayerResources>): boolean {
     for (const [resourceType, amount] of Object.entries(requiredResources)) {
-      const playerAmount = player.resources[resourceType as keyof PlayerResources] || 0;
-      if (playerAmount < amount) {
-        return false;
+      if (typeof amount === 'number') {
+        const playerAmount = player.resources[resourceType as keyof PlayerResources] || 0;
+        if (playerAmount < amount) {
+          return false;
+        }
       }
     }
     return true;
@@ -63,7 +67,9 @@ export class ResourceSystem {
     }
 
     for (const [resourceType, amount] of Object.entries(resources)) {
-      player.resources[resourceType as keyof PlayerResources] -= amount;
+      if (typeof amount === 'number') {
+        player.resources[resourceType as keyof PlayerResources] -= amount;
+      }
     }
 
     return true;

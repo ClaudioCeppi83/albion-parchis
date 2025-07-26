@@ -35,7 +35,7 @@ export class PlayerManager {
     for (let i = 0; i < 4; i++) {
       pieces.push({
         id: uuidv4(),
-        position: { x: -1, y: -1 }, // En casa inicialmente
+        position: { x: -1, y: -1, zone: 'home' }, // En casa inicialmente
         status: 'home',
         level: 1,
         experience: 0,

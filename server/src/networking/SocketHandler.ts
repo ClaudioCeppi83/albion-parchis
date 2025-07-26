@@ -1,5 +1,6 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { GameEngine } from '../core/GameEngine';
+import { GameActionsController } from '../controllers/GameActionsController';
 import { logger } from '../utils/logger';
 import { ClientMessage, ServerMessage, PlayerAction } from '../types/game';
 
@@ -10,11 +11,13 @@ import { ClientMessage, ServerMessage, PlayerAction } from '../types/game';
 export class SocketHandler {
   private io: SocketIOServer;
   private gameEngine: GameEngine;
+  private gameActionsController: GameActionsController;
   private connectedPlayers: Map<string, { socketId: string; playerId?: string; gameId?: string }>;
 
   constructor(io: SocketIOServer, gameEngine: GameEngine) {
     this.io = io;
     this.gameEngine = gameEngine;
+    this.gameActionsController = new GameActionsController(gameEngine);
     this.connectedPlayers = new Map();
   }
 
@@ -59,10 +62,49 @@ export class SocketHandler {
       this.handleCreateGame(socket, data);
     });
 
-    // Acciones del juego
+    // Acciones del juego (genérico)
     socket.on('player_action', (data: PlayerAction) => {
       this.handlePlayerAction(socket, data);
     });
+
+    // === EVENTOS ESPECÍFICOS DE MECÁNICAS BÁSICAS ===
+    
+    // Tirar dados
+    socket.on('roll_dice', () => {
+      this.handleRollDice(socket);
+    });
+
+    // Mover ficha
+    socket.on('move_piece', (data: { pieceId: string; targetPosition: any }) => {
+      this.handleMovePiece(socket, data);
+    });
+
+    // Obtener movimientos disponibles
+    socket.on('get_available_moves', () => {
+      this.handleGetAvailableMoves(socket);
+    });
+
+    // Obtener información del turno actual
+    socket.on('get_turn_info', () => {
+      this.handleGetTurnInfo(socket);
+    });
+
+    // Obtener estadísticas del jugador
+    socket.on('get_player_stats', () => {
+      this.handleGetPlayerStats(socket);
+    });
+
+    // Obtener eventos del juego
+    socket.on('get_game_events', (data: { limit?: number }) => {
+      this.handleGetGameEvents(socket, data);
+    });
+
+    // Validar acción
+    socket.on('validate_action', (data: { actionType: string; actionData?: any }) => {
+      this.handleValidateAction(socket, data);
+    });
+
+    // === EVENTOS EXISTENTES ===
 
     // Solicitar estado del juego
     socket.on('request_game_state', () => {
@@ -385,6 +427,225 @@ export class SocketHandler {
         this.io.to(socketId).emit(event, data);
         break;
       }
+    }
+  }
+
+  // === HANDLERS PARA MECÁNICAS BÁSICAS ===
+
+  /**
+   * Manejar tirada de dados
+   */
+  private async handleRollDice(socket: Socket): Promise<void> {
+    try {
+      const clientInfo = this.connectedPlayers.get(socket.id);
+      if (!clientInfo || !clientInfo.playerId || !clientInfo.gameId) {
+        socket.emit('error', { message: 'Not authenticated' });
+        return;
+      }
+
+      const result = await this.gameActionsController.rollDice(
+        clientInfo.gameId,
+        clientInfo.playerId
+      );
+
+      if (result.success) {
+        // Enviar resultado al jugador
+        socket.emit('dice_rolled', {
+          diceRoll: result.diceRoll,
+          availableMoves: result.availableMoves,
+          canMove: result.canMove
+        });
+
+        // Notificar a otros jugadores
+        socket.to(clientInfo.gameId).emit('player_rolled_dice', {
+          playerId: clientInfo.playerId,
+          diceRoll: result.diceRoll
+        });
+
+        // Enviar estado actualizado
+        this.io.to(clientInfo.gameId).emit('game_state_update', result.gameState);
+
+        logger.info(`Dice rolled: ${result.diceRoll} by ${clientInfo.playerId}`);
+      } else {
+        socket.emit('action_error', {
+          action: 'roll_dice',
+          error: result.error
+        });
+      }
+    } catch (error) {
+      logger.error('Roll dice error:', error);
+      socket.emit('error', { message: 'Failed to roll dice' });
+    }
+  }
+
+  /**
+   * Manejar movimiento de ficha
+   */
+  private async handleMovePiece(socket: Socket, data: { pieceId: string; targetPosition: any }): Promise<void> {
+    try {
+      const clientInfo = this.connectedPlayers.get(socket.id);
+      if (!clientInfo || !clientInfo.playerId || !clientInfo.gameId) {
+        socket.emit('error', { message: 'Not authenticated' });
+        return;
+      }
+
+      const { pieceId, targetPosition } = data;
+      const result = await this.gameActionsController.movePiece(
+        clientInfo.gameId,
+        clientInfo.playerId,
+        pieceId,
+        targetPosition
+      );
+
+      if (result.success) {
+        // Enviar confirmación al jugador
+        socket.emit('piece_moved', {
+          pieceId,
+          targetPosition,
+          moveEvents: result.moveEvents
+        });
+
+        // Notificar a otros jugadores
+        socket.to(clientInfo.gameId).emit('player_moved_piece', {
+          playerId: clientInfo.playerId,
+          pieceId,
+          targetPosition,
+          moveEvents: result.moveEvents
+        });
+
+        // Enviar estado actualizado
+        this.io.to(clientInfo.gameId).emit('game_state_update', result.gameState);
+
+        // Si hay cambio de turno, notificar
+        if (result.nextPlayer) {
+          this.io.to(clientInfo.gameId).emit('turn_changed', {
+            nextPlayer: result.nextPlayer
+          });
+        }
+
+        logger.info(`Piece moved: ${pieceId} by ${clientInfo.playerId}`);
+      } else {
+        socket.emit('action_error', {
+          action: 'move_piece',
+          error: result.error
+        });
+      }
+    } catch (error) {
+      logger.error('Move piece error:', error);
+      socket.emit('error', { message: 'Failed to move piece' });
+    }
+  }
+
+  /**
+   * Manejar solicitud de movimientos disponibles
+   */
+  private handleGetAvailableMoves(socket: Socket): void {
+    try {
+      const clientInfo = this.connectedPlayers.get(socket.id);
+      if (!clientInfo || !clientInfo.playerId || !clientInfo.gameId) {
+        socket.emit('error', { message: 'Not authenticated' });
+        return;
+      }
+
+      const result = this.gameActionsController.getAvailableMoves(
+        clientInfo.gameId,
+        clientInfo.playerId
+      );
+
+      socket.emit('available_moves', result);
+    } catch (error) {
+      logger.error('Get available moves error:', error);
+      socket.emit('error', { message: 'Failed to get available moves' });
+    }
+  }
+
+  /**
+   * Manejar solicitud de información del turno
+   */
+  private handleGetTurnInfo(socket: Socket): void {
+    try {
+      const clientInfo = this.connectedPlayers.get(socket.id);
+      if (!clientInfo || !clientInfo.gameId) {
+        socket.emit('error', { message: 'Not in a game' });
+        return;
+      }
+
+      const result = this.gameActionsController.getCurrentTurnInfo(clientInfo.gameId);
+      socket.emit('turn_info', result);
+    } catch (error) {
+      logger.error('Get turn info error:', error);
+      socket.emit('error', { message: 'Failed to get turn info' });
+    }
+  }
+
+  /**
+   * Manejar solicitud de estadísticas del jugador
+   */
+  private handleGetPlayerStats(socket: Socket): void {
+    try {
+      const clientInfo = this.connectedPlayers.get(socket.id);
+      if (!clientInfo || !clientInfo.playerId || !clientInfo.gameId) {
+        socket.emit('error', { message: 'Not authenticated' });
+        return;
+      }
+
+      const result = this.gameActionsController.getPlayerStats(
+        clientInfo.gameId,
+        clientInfo.playerId
+      );
+
+      socket.emit('player_stats', result);
+    } catch (error) {
+      logger.error('Get player stats error:', error);
+      socket.emit('error', { message: 'Failed to get player stats' });
+    }
+  }
+
+  /**
+   * Manejar solicitud de eventos del juego
+   */
+  private handleGetGameEvents(socket: Socket, data: { limit?: number }): void {
+    try {
+      const clientInfo = this.connectedPlayers.get(socket.id);
+      if (!clientInfo || !clientInfo.gameId) {
+        socket.emit('error', { message: 'Not in a game' });
+        return;
+      }
+
+      const result = this.gameActionsController.getGameEvents(
+        clientInfo.gameId,
+        data.limit || 10
+      );
+
+      socket.emit('game_events', result);
+    } catch (error) {
+      logger.error('Get game events error:', error);
+      socket.emit('error', { message: 'Failed to get game events' });
+    }
+  }
+
+  /**
+   * Manejar validación de acción
+   */
+  private handleValidateAction(socket: Socket, data: { actionType: string; actionData?: any }): void {
+    try {
+      const clientInfo = this.connectedPlayers.get(socket.id);
+      if (!clientInfo || !clientInfo.playerId || !clientInfo.gameId) {
+        socket.emit('error', { message: 'Not authenticated' });
+        return;
+      }
+
+      const result = this.gameActionsController.validateAction(
+        clientInfo.gameId,
+        clientInfo.playerId,
+        data.actionType,
+        data.actionData
+      );
+
+      socket.emit('action_validation', result);
+    } catch (error) {
+      logger.error('Validate action error:', error);
+      socket.emit('error', { message: 'Failed to validate action' });
     }
   }
 }
