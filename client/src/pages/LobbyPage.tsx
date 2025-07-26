@@ -20,7 +20,7 @@ const LobbyPage: React.FC = () => {
             Lobby de Juegos
           </h1>
           <p className="text-slate-300 text-lg">
-            Únete a la batalla entre gremios de Albion
+            Únete a la batalla entre órdenes de Valdris
           </p>
         </motion.div>
 

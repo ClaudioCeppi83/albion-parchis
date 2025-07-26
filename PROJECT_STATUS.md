@@ -1,4 +1,4 @@
-# 🎮 ESTADO DEL PROYECTO ALBION PARCHÍS
+# 🎮 ESTADO DEL PROYECTO VALDRIS CHRONICLES
 
 ## ✅ FASE 1.1: FUNDAMENTOS TÉCNICOS - **COMPLETADA AL 100%**
 
@@ -12,7 +12,7 @@
 
 #### **Monorepo con Workspaces**
 ```
-albion-parchis/
+valdris-chronicles/
 ├── 📄 package.json (workspace principal)
 ├── 🖥️ server/ (Backend - Node.js + TypeScript)
 └── 🌐 client/ (Frontend - React + TypeScript)
@@ -44,7 +44,7 @@ albion-parchis/
 - Control de estados válidos
 
 #### **4. ResourceManager** ✅
-- Sistema de recursos de Albion
+- Sistema de recursos de Valdris
 - Bonificaciones por gremio
 - Comercio entre jugadores
 - Gestión de equipamiento
@@ -351,7 +351,7 @@ GameEngine
 ├── GameStateManager    # Estados de juego
 ├── GameValidationSystem # Validaciones
 ├── BoardManager        # Gestión del tablero
-└── ResourceManager     # Recursos (Albion)
+└── ResourceManager     # Recursos (Valdris)
 ```
 
 #### **Flujo de Datos** ✅
@@ -372,7 +372,7 @@ server/src/game/
 ├── GameStateManager.ts    # Estados de juego
 ├── GameValidationSystem.ts # Validaciones
 ├── BoardManager.ts        # Gestión tablero
-└── ResourceManager.ts     # Recursos Albion
+└── ResourceManager.ts     # Recursos Valdris
 ```
 
 #### **Tests** ✅
@@ -416,7 +416,7 @@ server/src/tests/
 
 **¡Las Mecánicas Básicas están completamente implementadas y funcionando!**
 
-El proyecto Albion Parchís ahora cuenta con:
+El proyecto Valdris Chronicles ahora cuenta con:
 - ✅ Sistema de turnos completo y funcional
 - ✅ Lógica de movimiento de fichas implementada
 - ✅ Validaciones de juego robustas
@@ -452,7 +452,7 @@ El proyecto Albion Parchís ahora cuenta con:
 ```typescript
 // Configuración del Motor
 - Canvas: 800x600 píxeles
-- Background: #2c3e50 (tema Albion)
+- Background: #2c3e50 (tema Valdris)
 - Antialias: Activado
 - Resolution: Adaptativo (devicePixelRatio)
 - Interactividad: Completa
@@ -520,7 +520,7 @@ interface TileData
 1. **Generación de Grid** - 15x15 tiles automáticos
 2. **Posicionamiento Isométrico** - Cálculo matemático preciso
 3. **Tipos de Casillas** - Path, grass, home, safe
-4. **Colores Temáticos** - Paleta Albion Online
+4. **Colores Temáticos** - Paleta Valdris Chronicles
 5. **Interactividad** - Hover effects y eventos
 
 #### **Sistema de Coordenadas** ✅
@@ -593,7 +593,7 @@ client/src/pages/HomePage.tsx
 
 **¡El Motor Isométrico está completamente implementado y funcionando!**
 
-El proyecto Albion Parchís ahora cuenta con:
+El proyecto Valdris Chronicles ahora cuenta con:
 - ✅ Motor gráfico PixiJS integrado
 - ✅ Sistema de coordenadas isométricas
 - ✅ Renderizado de tablero 15x15
@@ -617,7 +617,7 @@ El proyecto Albion Parchís ahora cuenta con:
 
 **¡La conexión cliente-servidor está completamente implementada y funcionando!** 
 
-El proyecto Albion Parchís ahora cuenta con:
+El proyecto Valdris Chronicles ahora cuenta con:
 - ✅ Comunicación bidireccional Socket.IO
 - ✅ Estado global reactivo con Zustand
 - ✅ Componentes de juego interactivos
@@ -673,13 +673,13 @@ El proyecto Albion Parchís ahora cuenta con:
 └── /settings (SettingsPage)
 ```
 
-### 🎨 Tema Visual Albion
+### 🎨 Tema Visual Valdris
 
-#### **Gremios Implementados**
-- **Steel Guild** - Grises metálicos, tanques y resistencia
-- **Arcane Guild** - Púrpuras místicos, magia y sabiduría  
-- **Green Guild** - Verdes naturales, naturaleza y curación
-- **Golden Guild** - Dorados nobles, comercio y riqueza
+#### **Órdenes Implementadas**
+- **Orden de Acero** - Grises metálicos, tanques y resistencia
+- **Orden Arcana** - Púrpuras místicos, magia y sabiduría
+- **Orden Verde** - Verdes naturales, naturaleza y curación
+- **Orden Dorada** - Dorados nobles, comercio y riqueza
 
 #### **Sistema de Colores**
 - Paleta completa por gremio
@@ -759,7 +759,7 @@ client/src/pages/
 - `tsconfig.json` - Configuración TypeScript
 - `vite.config.ts` - Configuración Vite
 - `vitest.config.ts` - Configuración testing
-- `tailwind.config.js` - Tema Albion
+- `tailwind.config.js` - Tema Valdris
 - `postcss.config.js` - PostCSS (ES modules)
 - `.eslintrc.cjs` - Reglas de linting
 
@@ -810,13 +810,13 @@ npm run lint:client  # Lint cliente
 
 ### 🎉 Conclusión
 
-**¡El proyecto Albion Parchís está funcionando perfectamente hasta la Fase 1.5!** 
+**¡El proyecto Valdris Chronicles está funcionando perfectamente hasta la Fase 1.5!** 
 
 El proyecto ahora cuenta con:
 - ✅ Backend sólido y funcional con Socket.IO
 - ✅ Componentes React modernos y reutilizables
 - ✅ Sistema de navegación completo
-- ✅ Tema visual Albion implementado
+- ✅ Tema visual Valdris implementado
 - ✅ Animaciones y UX optimizada
 - ✅ Conexión cliente-servidor en tiempo real
 - ✅ Estado global reactivo con Zustand
@@ -872,7 +872,7 @@ El proyecto ahora cuenta con:
 - ✅ GameStateManager - Estados de juego
 - ✅ GameValidationSystem - Validaciones
 - ✅ BoardManager - Gestión del tablero
-- ✅ ResourceManager - Recursos de Albion
+- ✅ ResourceManager - Recursos de Valdris
 - ✅ IsometricEngine - Motor gráfico PixiJS
 - ✅ SocketHandler - Comunicación en tiempo real
 

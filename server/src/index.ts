@@ -12,7 +12,7 @@ async function main() {
     // Inicializar el servidor
     gameServer.start();
     
-    logger.info('🚀 Albion Parchís Server started successfully');
+    logger.info('🚀 Valdris Chronicles Server started successfully');
     
   } catch (error) {
     logger.error('❌ Failed to start server:', error);

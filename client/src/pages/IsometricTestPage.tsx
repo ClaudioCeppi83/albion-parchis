@@ -31,7 +31,7 @@ export const IsometricTestPage: React.FC = () => {
             transition={{ delay: 0.4, duration: 0.6 }}
             className="text-xl text-gray-300 mb-6"
           >
-            Prueba del sistema de renderizado isométrico para Albion Parchís
+            Prueba del sistema de renderizado isométrico para Valdris Chronicles
           </motion.p>
         </div>
 
@@ -114,7 +114,7 @@ export const IsometricTestPage: React.FC = () => {
                 const canvas = document.querySelector('canvas');
                 if (canvas) {
                   const link = document.createElement('a');
-                  link.download = 'albion-parchis-board.png';
+                  link.download = 'valdris-chronicles-board.png';
                   link.href = canvas.toDataURL();
                   link.click();
                 }
@@ -134,7 +134,7 @@ export const IsometricTestPage: React.FC = () => {
           className="text-center mt-8"
         >
           <p className="text-gray-400 text-sm">
-            Fase 1.4: Motor Isométrico - Albion Parchís Engine v1.0
+            Fase 1.4: Motor Isométrico - Valdris Chronicles Engine v1.0
           </p>
         </motion.div>
       </motion.div>

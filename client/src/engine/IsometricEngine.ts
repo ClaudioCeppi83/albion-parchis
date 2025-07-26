@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 
 /**
- * Motor Isométrico para Albion Parchís
+ * Motor Isométrico para Valdris Chronicles
  * Maneja el renderizado del tablero en vista isométrica
  */
 export class IsometricEngine {

@@ -133,14 +133,14 @@ const SettingsPage: React.FC = () => {
               
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Gremio Preferido
+                  Orden Preferida
                 </label>
                 <select className="w-full px-3 py-2 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <option value="">Seleccionar automáticamente</option>
-                  <option value="steel">Steel Guild</option>
-                  <option value="arcane">Arcane Guild</option>
-                  <option value="green">Green Guild</option>
-                  <option value="golden">Golden Guild</option>
+                  <option value="steel">Orden de Acero</option>
+              <option value="arcane">Orden Arcana</option>
+              <option value="green">Orden Verde</option>
+              <option value="golden">Orden Dorada</option>
                 </select>
               </div>
               

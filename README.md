@@ -1,17 +1,37 @@
-# 🎮 Albion Parchís
+# 🏰 Valdris Chronicles
 
-Una reimaginación estratégica del clásico juego de mesa parchís ambientado en el universo de Albion Online.
+**"Parchís con islas flotantes, donde cuatro órdenes compiten por reunificar un reino fragmentado através de estrategia, comercio y combate."**
 
 ## ✨ Características Implementadas
 
 - **✅ Multijugador en tiempo real** - Hasta 4 jugadores simultáneos con Socket.IO
-- **✅ Gráficos isométricos** - Motor PixiJS con renderizado isométrico fluido
+- **✅ Gráficos isométricos** - Motor PixiJS con renderizado de islas flotantes
 - **✅ Sistema de turnos robusto** - Rotación automática y validaciones completas
-- **✅ Mecánicas de Parchís completas** - Reglas tradicionales implementadas
-- **✅ 4 Gremios únicos** - Steel, Arcane, Green y Golden con temas visuales
-- **✅ Interfaz moderna** - React + Tailwind CSS con animaciones Framer Motion
+- **✅ Mecánicas de Parchís evolucionadas** - Reglas tradicionales + elementos estratégicos
+- **✅ 4 Órdenes únicas** - Acero, Arcano, Verde y Dorado con estilos de juego diferenciados
+- **✅ Interfaz moderna** - React + Tailwind CSS con estética pixel art nostálgica
 - **✅ Estado global reactivo** - Zustand para sincronización cliente-servidor
 - **✅ Testing completo** - 44 tests pasando con cobertura integral
+
+## 🎯 Concepto del Juego
+
+### Las Cuatro Órdenes
+
+🔴 **Orden del Acero** - *"La fuerza directa y el honor conquistan"*
+- Guerreros que prefieren el combate frontal
+- Mejores en batalla, equipo más resistente
+
+🔵 **Círculo Arcano** - *"La astucia supera a la fuerza bruta"*  
+- Magos que usan estrategia y habilidades especiales
+- Pueden ver información oculta, habilidades únicas
+
+🟢 **Hermandad Verde** - *"La agilidad y armonía abren caminos"*
+- Exploradores que evitan conflictos innecesarios
+- Movimiento extra, pueden evitar algunos combates
+
+🟡 **Gremio Dorado** - *"El comercio une más que la espada"*
+- Mercaderes que prefieren negociar y aliarse
+- Más recursos, comercio eficiente, alianzas beneficiosas
 
 ## 🚀 Inicio Rápido
 
@@ -23,7 +43,7 @@ Una reimaginación estratégica del clásico juego de mesa parchís ambientado e
 ```bash
 # Clonar el repositorio
 git clone <repository-url>
-cd albion-parchis
+cd valdris-chronicles
 
 # Instalar dependencias
 npm install
@@ -61,15 +81,15 @@ npm run test:client  # Tests del cliente
 ### Frontend (React + TypeScript)
 - **React 18** - Interfaz de usuario moderna
 - **Vite** - Build system y dev server optimizado
-- **Tailwind CSS** - Estilos con tema Albion personalizado
-- **PixiJS** - Motor gráfico isométrico
+- **Tailwind CSS** - Estilos con tema Valdris personalizado
+- **PixiJS** - Motor gráfico isométrico para islas flotantes
 - **Zustand** - Estado global reactivo
 - **Framer Motion** - Animaciones fluidas
 
 ## 📁 Estructura del Proyecto
 
 ```
-albion-parchis/
+valdris-chronicles/
 ├── client/                    # Frontend React
 │   ├── src/
 │   │   ├── components/        # Componentes reutilizables
@@ -85,54 +105,108 @@ albion-parchis/
 │   │   └── App.tsx
 ├── server/                    # Backend Node.js
 │   ├── src/
-│   │   ├── game/             # Lógica del juego
+│   │   ├── core/             # Lógica del juego
 │   │   │   ├── GameEngine.ts        # Motor principal
 │   │   │   ├── TurnSystem.ts        # Sistema de turnos
 │   │   │   ├── GameStateManager.ts  # Estados de juego
 │   │   │   ├── GameValidationSystem.ts # Validaciones
 │   │   │   ├── BoardManager.ts      # Gestión del tablero
-│   │   │   └── ResourceManager.ts   # Recursos Albion
+│   │   │   └── MovementSystem.ts    # Sistema de movimiento
+│   │   ├── systems/          # Sistemas de juego
+│   │   │   ├── ResourceSystem.ts    # Sistema de recursos
+│   │   │   ├── TerritorySystem.ts   # Sistema de territorios
+│   │   │   └── TradingSystem.ts     # Sistema de comercio
 │   │   ├── networking/       # Comunicación
 │   │   │   └── SocketHandler.ts
 │   │   ├── types/            # Tipos TypeScript
 │   │   ├── utils/            # Utilidades
 │   │   ├── tests/            # Tests unitarios e integración
 │   │   └── server.ts
-└── PROJECT_STATUS.md         # Documentación detallada
+├── context/                   # Documentación del proyecto
+│   ├── identity_valdris_chronicles.md
+│   ├── valdris_design_doc.md
+│   ├── valdris_development_phases.md
+│   ├── valdris_tech_doc.md
+│   └── valdris_visual_guide.md
+└── PROJECT_STATUS.md         # Estado actual del desarrollo
 ```
 
-## 🎯 Estado Actual - ¡TODAS LAS FASES COMPLETADAS!
+## 🎯 Estado Actual
 
-### ✅ Fase 1.1: Fundamentos Técnicos (100%)
-- [x] Monorepo con workspaces configurado
-- [x] TypeScript setup completo
-- [x] Sistema de logging con Winston
-- [x] Arquitectura base sólida
+### ✅ Fase 1 Completada: MVP Visual y Mecánicas Básicas
+- **Fundamentos Técnicos**: Backend Node.js/TypeScript, Frontend React/TypeScript
+- **Motor Isométrico**: Transformaciones, renderizado, z-ordering para islas flotantes
+- **Assets Pixel Art**: Tiles base, sprites de órdenes, paleta de colores Valdris
+- **Mecánicas Core**: Lógica tradicional de Parchís, sistema de turnos, captura de fichas
+- **Interfaz Básica**: HUD, área de dados, notificaciones, diseño responsivo
+- **Animaciones Base**: Motor frame-by-frame, movimiento, idle, tweening
+- **Dados Animados**: Cubilete 3D, botón, física, sonido
+- **Pulido Final**: Optimización, tests E2E, QA manual, documentación
 
-### ✅ Fase 1.2: Componentes React (100%)
-- [x] Sistema de componentes UI completo
-- [x] Tema visual Albion implementado
-- [x] Navegación con React Router
-- [x] Animaciones con Framer Motion
+### 🔧 Funcionalidades Operativas
 
-### ✅ Fase 1.3: Conexión Cliente-Servidor (100%)
-- [x] Socket.IO configurado y funcional
-- [x] Estado global con Zustand
-- [x] Comunicación bidireccional
-- [x] Manejo de errores y reconexión
+#### Gestión de Juegos
+- ✅ Creación y unión a partidas
+- ✅ Sistema de salas con códigos únicos
+- ✅ Gestión de jugadores (4 órdenes: Steel, Arcane, Green, Golden)
+- ✅ Estados de juego (waiting, playing, finished)
 
-### ✅ Fase 1.4: Motor Isométrico (100%)
-- [x] PixiJS integrado completamente
-- [x] Sistema de coordenadas isométricas
-- [x] Renderizado del tablero 15x15
-- [x] Interactividad (pan, zoom, hover)
+#### Mecánicas de Juego
+- ✅ Tablero isométrico con islas flotantes
+- ✅ Sistema de turnos robusto con validaciones
+- ✅ Movimiento de fichas con animaciones fluidas
+- ✅ Captura de fichas enemigas
+- ✅ Condiciones de victoria tradicionales
+- ✅ Dados animados con física realista
 
-### ✅ Fase 1.5: Mecánicas Básicas (100%)
-- [x] Sistema de turnos completo
-- [x] Lógica de movimiento de fichas
-- [x] Validaciones de juego robustas
-- [x] Estados de juego consistentes
-- [x] Gestión completa de jugadores
+#### Interfaz y UX
+- ✅ Diseño moderno con tema Valdris Chronicles
+- ✅ Estado global reactivo (Zustand)
+- ✅ Comunicación en tiempo real (Socket.IO)
+- ✅ Animaciones suaves (Framer Motion)
+- ✅ Responsive design para múltiples dispositivos
+
+### 🧪 Testing y Calidad
+- ✅ **100% Cobertura de Tests**
+- ✅ Tests unitarios para lógica de juego
+- ✅ Tests de integración para Socket.IO
+- ✅ Tests E2E para flujos completos
+- ✅ Validación de estados de juego
+- ✅ Manejo robusto de errores
+
+### 📋 Comandos de Desarrollo
+
+```bash
+# Desarrollo
+npm run dev              # Inicia servidor y cliente
+npm run dev:server       # Solo backend (puerto 3001)
+npm run dev:client       # Solo frontend (puerto 3000)
+
+# Testing
+npm run test             # Todos los tests
+npm run test:server      # Tests del servidor
+npm run test:client      # Tests del cliente
+npm run test:coverage    # Reporte de cobertura
+
+# Producción
+npm run build            # Build completo
+npm run start            # Servidor de producción
+```
+
+## 🚀 Próximos Pasos: Fase 2.1 - Elementos de Valdris
+
+### 🎯 Objetivos Inmediatos
+1. **Sistema de Zonas**: Implementar ciudades seguras y campos peligrosos
+2. **Recursos Básicos**: Monedas, Materiales, Favores
+3. **Progresión de Fichas**: Niveles Veterano y Élite
+4. **Habilidades Especiales**: Carga, Visión, Escape, Pacto
+5. **Territorios**: Control básico de fragmentos valiosos
+
+### 📈 Roadmap de Desarrollo
+- **Fase 2**: Elementos de Valdris (Zonas, Recursos, Progresión)
+- **Fase 3**: Profundidad Estratégica (Comercio, Mazmorras)
+- **Fase 4**: Pulido y Optimización
+- **Post-Launch**: Contenido adicional y mejoras
 
 ## 🎮 Funcionalidades Operativas
 
@@ -215,10 +289,10 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 ## 🎨 Créditos
 
-- Inspirado en el universo de Albion Online
+- Inspirado en el universo de las islas flotantes de Valdris
 - Motor gráfico PixiJS
 - Mecánicas de Parchís tradicionales
-- Tema visual Albion personalizado
+- Tema visual Valdris personalizado
 
 ---
 

@@ -25,7 +25,7 @@ const Header: React.FC = () => {
               <Gamepad2 className="w-8 h-8 text-blue-400" />
             </motion.div>
             <h1 className="text-xl font-game font-bold gradient-text group-hover:scale-105 transition-transform">
-              Albion Parchís
+              Valdris Chronicles
             </h1>
           </Link>
 

@@ -12,7 +12,7 @@ import { logger } from './utils/logger';
 config();
 
 /**
- * Servidor principal de Albion Parchís
+ * Servidor principal de Valdris Chronicles
  * Configura Express, Socket.IO y maneja las conexiones
  */
 export class GameServer {
@@ -99,7 +99,7 @@ export class GameServer {
     // Información del servidor
     this.app.get('/api/server-info', (req, res) => {
       res.json({
-        name: 'Albion Parchís Server',
+        name: 'Valdris Chronicles Server',
         version: '1.0.0',
         activeGames: this.gameEngine.getActiveGamesCount(),
         connectedPlayers: this.socketHandler.getConnectedPlayersCount(),
@@ -222,7 +222,7 @@ export class GameServer {
    */
   public start(): void {
     this.server.listen(this.port, () => {
-      logger.info(`🎮 Albion Parchís Server running on port ${this.port}`);
+      logger.info(`🎮 Valdris Chronicles Server running on port ${this.port}`);
       logger.info(`🌐 Client URL: ${process.env.CORS_ORIGIN || 'http://localhost:5173'}`);
       logger.info(`📊 Health check: http://localhost:${this.port}/health`);
       

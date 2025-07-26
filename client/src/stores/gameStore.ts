@@ -186,7 +186,7 @@ export const useGameStore = create<GameStore>()(
         }, false, 'resetAll'),
     }),
     {
-      name: 'albion-parchis-game-store',
+      name: 'valdris-chronicles-game-store',
     }
   )
 );

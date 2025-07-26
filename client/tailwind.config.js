@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Colores de los gremios de Albion
+        // Colores de las órdenes de Valdris
         steel: {
           50: '#f8fafc',
           100: '#f1f5f9',

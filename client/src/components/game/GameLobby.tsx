@@ -162,10 +162,10 @@ export const GameLobby: React.FC = () => {
       <Card variant="steel" className="p-6">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-white mb-2">
-            Albion Parchís
+            Valdris Chronicles
           </h2>
           <p className="text-gray-400">
-            Únete a la batalla entre gremios
+            Únete a la batalla entre órdenes
           </p>
         </div>
 
@@ -248,15 +248,10 @@ const getGuildStyles = (guild: string) => {
 
 const getGuildName = (guild: string) => {
   switch (guild) {
-    case 'steel':
-      return 'Acero';
-    case 'arcane':
-      return 'Arcano';
-    case 'green':
-      return 'Verde';
-    case 'golden':
-      return 'Dorado';
-    default:
-      return 'Desconocido';
+    case 'steel': return 'Orden de Acero';
+    case 'arcane': return 'Orden Arcana';
+    case 'green': return 'Orden Verde';
+    case 'golden': return 'Orden Dorada';
+    default: return 'Orden Desconocida';
   }
 };

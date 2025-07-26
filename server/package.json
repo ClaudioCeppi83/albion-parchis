@@ -1,7 +1,7 @@
 {
-  "name": "albion-parchis-server",
+  "name": "valdris-chronicles-server",
   "version": "0.1.0",
-  "description": "Albion Parchís - Game Server",
+  "description": "Valdris Chronicles - Game Server",
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",

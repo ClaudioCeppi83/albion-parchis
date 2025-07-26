@@ -7,28 +7,28 @@ import { Card, Button } from '../components/ui';
 const HomePage: React.FC = () => {
   const guildCards = [
     {
-      name: 'Steel Guild',
+      name: 'Orden de Acero',
       description: 'Maestros del metal y la forja. Especialistas en defensa y resistencia.',
       icon: Shield,
       color: 'steel',
       bonus: '+20% Recursos de Piedra'
     },
     {
-      name: 'Arcane Guild',
+      name: 'Orden Arcana',
       description: 'Magos y alquimistas. Dominan las artes arcanas y la transmutación.',
       icon: Sparkles,
       color: 'arcane',
       bonus: '+50% Recursos de Plata'
     },
     {
-      name: 'Green Guild',
+      name: 'Orden Verde',
       description: 'Guardianes de la naturaleza. Expertos en recursos naturales.',
       icon: Leaf,
       color: 'green',
       bonus: '+20% Madera y Fibra'
     },
     {
-      name: 'Golden Guild',
+      name: 'Orden Dorada',
       description: 'Comerciantes y nobles. Maestros del comercio y la riqueza.',
       icon: Crown,
       color: 'golden',
@@ -50,7 +50,7 @@ const HomePage: React.FC = () => {
     {
       icon: TrendingUp,
       title: 'Progresión',
-      description: 'Sistema de recursos y comercio de Albion'
+      description: 'Sistema de recursos y comercio de Valdris'
     }
   ];
 
@@ -64,11 +64,11 @@ const HomePage: React.FC = () => {
       >
         <h1 className="text-4xl md:text-6xl font-game font-bold text-white">
           Bienvenido a{' '}
-          <span className="gradient-text">Albion Parchís</span>
+          <span className="gradient-text">Valdris Chronicles</span>
         </h1>
-        <p className="text-xl text-slate-300 max-w-2xl mx-auto">
-          Parchís reimaginado con elementos de Albion Online. 
-          Elige tu gremio, gestiona recursos y domina el tablero.
+        <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+            Parchís estratégico en las islas flotantes de Valdris.
+            Elige tu orden, gestiona recursos y domina el tablero.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -117,7 +117,7 @@ const HomePage: React.FC = () => {
         })}
       </motion.div>
 
-      {/* Guild Cards */}
+      {/* Order Cards */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -126,10 +126,10 @@ const HomePage: React.FC = () => {
       >
         <div className="text-center">
           <h2 className="text-3xl font-game font-bold text-white mb-4">
-            Elige tu Gremio
+            Elige tu Orden
           </h2>
-          <p className="text-slate-300">
-            Cada gremio tiene bonificaciones únicas y estilos de juego diferentes
+          <p className="text-slate-400 mb-6">
+            Cada orden tiene bonificaciones únicas y estilos de juego diferentes
           </p>
         </div>
 

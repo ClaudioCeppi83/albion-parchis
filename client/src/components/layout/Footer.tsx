@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
           <div className="text-center md:text-left">
             <p className="text-slate-400 text-sm">
-              Albion Parchís - Fase 1.2: Componentes React
+              Valdris Chronicles - Fase 1.2: Componentes React
             </p>
             <p className="text-slate-500 text-xs mt-1">
               Desarrollado con React, TypeScript, Node.js y Socket.IO

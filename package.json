@@ -1,7 +1,7 @@
 {
-  "name": "albion-parchis",
+  "name": "valdris-chronicles",
   "version": "0.1.0",
-  "description": "Albion Parchís - A strategic reimagining of the classic board game set in the Albion Online universe",
+  "description": "Valdris Chronicles - A strategic reimagining of the classic Parchís game set in the floating islands of Valdris",
   "main": "server/dist/index.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
@@ -22,13 +22,15 @@
     "game",
     "board-game",
     "parchis",
-    "albion-online",
+    "valdris-chronicles",
+    "floating-islands",
     "multiplayer",
     "websocket",
     "isometric",
-    "pixel-art"
+    "pixel-art",
+    "strategy"
   ],
-  "author": "Albion Parchís Development Team",
+  "author": "Valdris Chronicles Development Team",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"
